@@ -1,0 +1,13 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "KArtik Joshi",
+  "license": "ISC",
+  "description": "auth service"
+}
