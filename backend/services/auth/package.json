@@ -9,5 +9,11 @@
   "keywords": [],
   "author": "KArtik Joshi",
   "license": "ISC",
-  "description": "auth service"
+  "description": "auth service",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "firebase-admin": "^14.2.0",
+    "mongoose": "^9.7.4"
+  }
 }
