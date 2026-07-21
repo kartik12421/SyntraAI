@@ -11,9 +11,11 @@
   "license": "ISC",
   "description": "auth service",
   "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "firebase-admin": "^14.2.0",
+    "firebase-admin": "^10.3.0",
     "mongoose": "^9.7.4"
   }
 }
