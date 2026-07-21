@@ -14,10 +14,14 @@ function App() {
   };
 
   const googleLogin = async () => {
-    const data = await signInWithPopup(auth, googleProvider);
-    const token = await data.user.getIdToken();
-    await handleLogin(token);
-    console.log(data);
+    try {
+      const data = await signInWithPopup(auth, googleProvider);
+      const token = await data.user.getIdToken();
+      await handleLogin(token);
+      console.log(data);
+    } catch (error) {
+      console.error("Google sign-in error:", error.code, error.message);
+    }
   };
 
   return (
