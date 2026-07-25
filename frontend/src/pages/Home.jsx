@@ -1,5 +1,4 @@
 import { signInWithPopup } from "firebase/auth";
-import React from "react";
 import { auth, googleProvider } from "../../utils/firebase.js";
 import api from "../../utils/axios.js";
 import { FcGoogle } from "react-icons/fc";
@@ -7,10 +6,13 @@ import { FcGoogle } from "react-icons/fc";
 function Home() {
   const handleLogin = async (token) => {
     try {
-      const { data } = await api.post("/auth/login", { token });
-      console.log(data);
+      const { data } = await api.post("/api/auth/login", { token });
+      return data;
     } catch (error) {
-      return res.status(500).json({ message: `Login error: ${error.message}` });
+      const message =
+        error.response?.data?.message || error.message || "Login failed";
+      console.error("Login error:", message);
+      throw new Error(message, { cause: error });
     }
   };
 
@@ -21,7 +23,11 @@ function Home() {
       await handleLogin(token);
       console.log(data);
     } catch (error) {
-      console.error("Google sign-in error:", error.code, error.message);
+      console.error(
+        "Google sign-in error:",
+        error.code || "LOGIN_FAILED",
+        error.message,
+      );
     }
   };
   return (
