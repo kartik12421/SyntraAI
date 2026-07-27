@@ -8,7 +8,7 @@ import { setUserData } from "../redux/userSlice.js";
 function Home({ onLoginSuccess }) {
   const { userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  console.log(userData);
+  // console.log(userData);
   const handleLogin = async (token) => {
     try {
       const { data } = await api.post("/api/auth/login", { token });
@@ -16,7 +16,7 @@ function Home({ onLoginSuccess }) {
     } catch (error) {
       const message =
         error.response?.data?.message || error.message || "Login failed";
-      console.error("Login error:", message);
+      // console.error("Login error:", message);
       throw new Error(message, { cause: error });
     }
   };
@@ -27,13 +27,14 @@ function Home({ onLoginSuccess }) {
       const token = await data.user.getIdToken();
       await handleLogin(token);
       await onLoginSuccess();
-      console.log(data);
+      // console.log(data);
     } catch (error) {
-      console.error(
-        "Google sign-in error:",
-        error.code || "LOGIN_FAILED",
-        error.message,
-      );
+      // console.error(
+      //   "Google sign-in error:",
+      //   error.code || "LOGIN_FAILED",
+      //   error.message,
+      // );
+      throw new Error(error);
     }
   };
   return (
