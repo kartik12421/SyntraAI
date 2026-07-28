@@ -1,5 +1,5 @@
 import Conversation from "../models/convserstion.model.js";
-import Message from "../models/message.model";
+import Message from "../models/message.model.js";
 
 //conversations
 export const createConversation = async (req, res) => {
@@ -67,7 +67,7 @@ export const saveMessage = async (req, res) => {
   }
 };
 
-export const getmessages = async (req, res) => {
+export const getMessages = async (req, res) => {
   try {
     const message = await Message.find({
       conversationId: req.params.conversationId,
