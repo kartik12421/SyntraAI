@@ -2,10 +2,10 @@ import express from "express";
 import {
   createConversation,
   getConversation,
-  getmessages,
+  getMessages,
   saveMessage,
   updateConversation,
-} from "../controllers/chat.controller";
+} from "../controllers/chat.controller.js";
 
 const chatRouter = express.Router();
 
@@ -14,6 +14,6 @@ chatRouter.get("/get-conversation", getConversation);
 chatRouter.post("/update-conversation", updateConversation);
 
 chatRouter.post("/save-messages", saveMessage);
-chatRouter.get("/get-messages/:conversationId", getmessages);
+chatRouter.get("/get-messages/:conversationId", getMessages);
 
 export default chatRouter;
