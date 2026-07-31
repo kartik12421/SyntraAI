@@ -15,8 +15,8 @@ function Home({ onLoginSuccess }) {
 
   const handleLogin = async (token) => {
     try {
-      const { data } = await api.post("/api/auth/login", { token });
-      dispatch(setUserData(data));
+      const { data } = await api.post("/api/auth", { token });
+      dispatch(setUserData(data.user ?? data));
     } catch (error) {
       const message =
         error.response?.data?.message || error.message || "Login failed";
@@ -60,6 +60,7 @@ function Home({ onLoginSuccess }) {
               </p>
             </div>
             <button
+              type="button"
               className="w-full flex items-center justify-center gap-3 py-2.75 rounded-xl text-sm font-medium text-white bg-linear-to-br from-indigo-500 to-violet-700 hover:from-indigo-400 hover:to-violet-600 active:from-indigo-600 active:to-violet-800 border border-indigo-500/30 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all duration-150 cursor-pointer"
               onClick={googleLogin}
             >
