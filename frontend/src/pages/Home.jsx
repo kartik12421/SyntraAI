@@ -12,6 +12,7 @@ function Home({ onLoginSuccess }) {
   const { userData } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   // console.log(userData);
+
   const handleLogin = async (token) => {
     try {
       const { data } = await api.post("/api/auth/login", { token });
@@ -40,6 +41,7 @@ function Home({ onLoginSuccess }) {
       throw new Error(error);
     }
   };
+
   return (
     <div className="min-h-screen bg-[#0d0f14] text-white overflow-hidden">
       <Sidebar />

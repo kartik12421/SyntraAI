@@ -5,9 +5,12 @@ import Message from "../models/message.model.js";
 export const createConversation = async (req, res) => {
   try {
     const userId = req.headers["x-user-id"];
-    console.log(userId);
+    if (!userId) {
+      return res.status(400).json({ message: "user id missing" });
+    }
+
     const conversation = await Conversation.create({
-      userId: userId,
+      userId,
     });
 
     return res.status(200).json(conversation);
@@ -21,9 +24,12 @@ export const createConversation = async (req, res) => {
 export const getConversation = async (req, res) => {
   try {
     const userId = req.headers["x-user-id"];
-    console.log(userId);
+    if (!userId) {
+      return res.status(400).json({ message: "user id missing" });
+    }
+
     const conversation = await Conversation.find({
-      userId: userId,
+      userId,
     }).sort({ updatedAt: -1 });
 
     return res.status(200).json(conversation);
