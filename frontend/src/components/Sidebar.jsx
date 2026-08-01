@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { ChartAreaIcon, Coins, LogOut, MessageCircle, PanelLeftIcon, PenBoxIcon, Plus, PlusIcon, User } from "lucide-react";
+import {
+  ChartAreaIcon,
+  Coins,
+  LogOut,
+  MessageCircle,
+  PanelLeftIcon,
+  PenBoxIcon,
+  Plus,
+  PlusIcon,
+  User,
+} from "lucide-react";
 import getConversation from "../../features/getConversation.js";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addConversations,
   setConversations,
-  setSelectConversations
+  setSelectConversations,
 } from "../redux/conversationSlice.js";
 import { createConversation } from "../../features/createConversation.js";
 import logOut from "../../features/logOut.js";
@@ -14,10 +24,12 @@ import { clearUserData } from "../redux/userSlice.js";
 function Sidebar() {
   const [collapse, setCollapse] = useState(false);
   const [isActive, setIsActive] = useState(null);
-  const [imageError, setImageError] = useState(false)
+  const [imageError, setImageError] = useState(false);
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
-  const { conversations, selectedConversation } = useSelector((state) => state.conversation);
+  const { conversations, selectedConversation } = useSelector(
+    (state) => state.conversation,
+  );
 
   useEffect(() => {
     const getConvo = async () => {
@@ -84,9 +96,12 @@ function Sidebar() {
         </button>
 
         {/* plus button */}
-        <button className='flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer'
-        onClick={handleCreateConversation}
-><Plus /></button>
+        <button
+          className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer"
+          onClick={handleCreateConversation}
+        >
+          <Plus />
+        </button>
 
         {/* conversations */}
         <div className="no-scrollbar flex-1 overflow-y-auto px-3 py-3">
@@ -115,12 +130,22 @@ function Sidebar() {
         </div>
 
         <div className="relative shrink-0">
-
-            {/* profile image */}
-            {
-              (userData?.avatar || !imageError) ? <img className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400" src= {userData?.avatar} alt="image" onError={() => {setImageError(true)}} /> : <div className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400"><User size={15} className="text-slate-400" /></div>
-            }
-          </div>
+          {/* profile image */}
+          {userData?.avatar || !imageError ? (
+            <img
+              className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400"
+              src={userData?.avatar}
+              alt="image"
+              onError={() => {
+                setImageError(true);
+              }}
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400">
+              <User size={15} className="text-slate-400" />
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -128,7 +153,6 @@ function Sidebar() {
   return (
     <div className="fixed lg:static inset-y-0 left-0 z-50 w-67.5 h-screen shrink-0 bg-[#0d0f14] border-r border-white/6">
       <div className="flex flex-col h-full">
-
         {/* top portion of Sidebar */}
         <div className="flex items-center gap-2.5 px-4 py-4 border-b border-white/6">
           <div
@@ -194,45 +218,60 @@ function Sidebar() {
           )}
         </div>
 
-        <div className="mx-2.6 h-px bg-white/60"/>
+        <div className="mx-2.6 h-px bg-white/60" />
 
         {/* footer */}
         <div className="px-3.5 py-3.5">
-          {userData ? (<div className="flex items-center gap2.5 cursor-pointer rounded-xl px-3 py-2.5 hover:bg-white/6 transition-colors duration-150">
-          <div className="relative shrink-0">
+          {userData ? (
+            <div className="flex items-center gap2.5 cursor-pointer rounded-xl px-3 py-2.5 hover:bg-white/6 transition-colors duration-150">
+              <div className="relative shrink-0">
+                {/* profile image */}
+                {userData?.avatar || !imageError ? (
+                  <img
+                    className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400"
+                    src={userData?.avatar}
+                    alt="image"
+                    onError={() => {
+                      setImageError(true);
+                    }}
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400">
+                    <User size={15} className="text-slate-400" />
+                  </div>
+                )}
+              </div>
 
-            {/* profile image */}
-            {
-              (userData?.avatar || !imageError) ? <img className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400" src= {userData?.avatar} alt="image" onError={() => {setImageError(true)}} /> : <div className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400"><User size={15} className="text-slate-400" /></div>
-            }
-          </div>
+              {/* profile name */}
+              <div className="flex-1 min-w-0 ml-2">
+                <p className="text-[15.5px] font-semibold text-white truncate">
+                  {userData?.name || "User"}
+                </p>
+                <p className="text-[11px] text-[#3be8ff] mt-px">
+                  {"Free Plan"}
+                </p>
+              </div>
 
-            {/* profile name */}
-            <div className="flex-1 min-w-0 ml-2">
-              <p className="text-[15.5px] font-semibold text-white truncate">
-                {userData?.name || "User"}
-              </p>
-              <p className="text-[11px] text-[#3be8ff] mt-px">{"Free Plan"}</p>
+              <div className="flex gap-1">
+                <button className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-yellow-600 cursor-pointer hover:bg-white/8 hover:text-slate-400 transition-all duration-150">
+                  <Coins size={18} />
+                </button>
+                <button
+                  className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-red-600 cursor-pointer hover:bg-white/8 hover:text-slate-400 transition-all duration-150"
+                  type="button"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
             </div>
-
-            <div className="flex gap-1">
-              <button className='flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-yellow-600 cursor-pointer hover:bg-white/8 hover:text-slate-400 transition-all duration-150'
-><Coins size={18} /></button>
-              <button className='flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-red-600 cursor-pointer hover:bg-white/8 hover:text-slate-400 transition-all duration-150'
-              type="button"
-              onClick={handleLogout}
-><LogOut size={18} /></button>
-            </div>
-
-
-          </div>) : <button>LogIn</button>}
+          ) : (
+            <button>LogIn</button>
+          )}
         </div>
       </div>
     </div>
   );
-
-  
-
 }
 
 export default Sidebar;

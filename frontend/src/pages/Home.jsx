@@ -44,11 +44,13 @@ function Home({ onLoginSuccess }) {
 
   return (
     <div className="min-h-screen bg-[#0d0f14] text-white overflow-hidden">
-      <Sidebar />
-      <ChatArea />
-      <Artifact />
-
-      {!userData && (
+      {userData ? (
+        <>
+          <Sidebar />
+          <ChatArea />
+          <Artifact />
+        </>
+      ) : (
         <div className="min-h-screen flex items-center justify-center px-4">
           <div className="w-full max-w-85 bg-[#13151c] border border-white/8 rounded-2xl p-7 flex flex-col gap-5">
             <div className="flex flex-col gap-1">
