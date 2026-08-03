@@ -1,6 +1,6 @@
 import api from "../utils/axios"
 
-function getMessages(id) {
+async function getMessages(id) {
     try {
         let { data } = await api.get(`/get-messages/${id}`)
         return data;
