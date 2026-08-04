@@ -59,11 +59,31 @@ export const updateConversation = async (req, res) => {
 export const saveMessage = async (req, res) => {
   try {
     const { conversationId, role, content } = req.body;
+    if (!conversationId) {
+      return res.status(400).json({ message: "conversation id missing" });
+    }
+
+    if (!content?.trim()) {
+      return res.status(400).json({ message: "message content missing" });
+    }
+
+    if (!["user", "assistant"].includes(role)) {
+      return res.status(400).json({ message: "invalid message role" });
+    }
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      return res.status(404).json({ message: "conversation not found" });
+    }
+
     const message = await Message.create({
       conversationId,
-      content,
+      content: content.trim(),
       role,
     });
+
+    conversation.updatedAt = new Date();
+    await conversation.save();
 
     return res.status(200).json(message);
   } catch (error) {
@@ -77,7 +97,7 @@ export const getMessages = async (req, res) => {
   try {
     const message = await Message.find({
       conversationId: req.params.conversationId,
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: 1 });
 
     return res.status(200).json(message);
   } catch (error) {
