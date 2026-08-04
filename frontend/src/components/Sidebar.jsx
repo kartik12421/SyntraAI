@@ -98,7 +98,9 @@ function Sidebar() {
         {/* plus button */}
         <button
           className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer"
-          onClick={handleCreateConversation}
+          onClick={() => {
+            dispatch(setSelectConversations(null));
+          }}
         >
           <Plus />
         </button>
@@ -169,7 +171,9 @@ function Sidebar() {
           </span>
           <button
             className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer"
-            onClick={handleCreateConversation}
+            onClick={() => {
+              dispatch(setSelectConversations(null));
+            }}
           >
             <PenBoxIcon size={17} />
           </button>
@@ -179,7 +183,9 @@ function Sidebar() {
         <div className="px-4 pt-4 pb-1">
           <button
             className="w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-linear-to-br from-cyan-400 to-violet-600 rounded-xl py-2.5 border-none cursor-pointer hover:opacity-90 transition-opacity duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleCreateConversation}
+            onClick={() => {
+              dispatch(setSelectConversations(null));
+            }}
             disabled={!userData}
           >
             <PlusIcon size={16} />
