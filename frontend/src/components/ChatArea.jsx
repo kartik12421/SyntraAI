@@ -14,6 +14,7 @@ function ChatArea() {
     const getMessage = async () => {
       try {
         if (selectedConversation?._id) {
+          if (selectedConversation.title == "New Chat") return;
           const data = await getMessages(selectedConversation._id);
           dispatch(mergeFetchedMessages(data));
           return;
@@ -26,7 +27,7 @@ function ChatArea() {
     };
 
     getMessage();
-  }, [dispatch, selectedConversation]);
+  }, [dispatch, selectedConversation?._id]);
 
   return (
     <div className="flex min-w-0 flex-1 flex-col h-screen">

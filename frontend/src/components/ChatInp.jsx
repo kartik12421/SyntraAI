@@ -6,6 +6,7 @@ import { createConversation } from "../../features/createConversation.js";
 import getMessages from "../../features/getMessages.js";
 import {
   addConversations,
+  setConversationTitle,
   setSelectConversations,
 } from "../redux/conversationSlice.js";
 import {
@@ -13,6 +14,7 @@ import {
   removeMessage,
   setMessages,
 } from "../redux/messageSlice.js";
+import { updateConversation } from "../../features/updateconversation.js";
 
 function ChatInp() {
   const dispatch = useDispatch();
@@ -34,6 +36,16 @@ function ChatInp() {
       conversation = await createConversation();
       dispatch(addConversations(conversation));
       dispatch(setSelectConversations(conversation));
+    }
+
+    if (conversation.title == "New Chat") {
+      await updateConversation({ id: conversation?._id, title: prompt });
+      dispatch(
+        setConversationTitle({
+          conversationId: conversation._id,
+          title: value.slice(0, 20),
+        }),
+      );
     }
 
     const payload = {
