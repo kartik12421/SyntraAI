@@ -218,7 +218,7 @@ function Sidebar() {
           )}
         </div>
 
-        <div className="mx-2.6 h-px bg-white/60" />
+        <div className="mx-2.6 h-px bg-white/6" />
 
         {/* footer */}
         <div className="px-3.5 py-3.5">
