@@ -5,10 +5,12 @@ import MessageBubble from "./MessageBubble";
 function MessageList() {
   const { selectedConversation } = useSelector((state) => state.conversation);
   const { messages } = useSelector((state) => state.message);
+  const showEmptyState = !selectedConversation || messages.length === 0;
+
   return (
     // no messages selected screen
     <div className="flex-1 overflow-y-auto px-6 py-7 space-y-5 [scrollbar-width:hidden] [&::-webkit-scrollbar]:hidden">
-      {messages?.length || !selectedConversation ? (
+      {showEmptyState ? (
         <div className="h-full flex flex-col items-center justify-center gap-4 text-center">
           <div className="flex flex-col gap-1.5">
             <h1 className="text-[30px] font-semibold tracking-tight text-cyan-400">
@@ -39,11 +41,13 @@ function MessageList() {
           </div>
         </div>
       ) : (
-        <div>
+        <div className="space-y-4">
           {messages?.map((msg, i) => {
-            <div>
-              <MessageBubble role={msg?.role} content={msg?.content}/>
-            </div>
+            return (
+              <div key={msg?._id || `${msg?.role}-${i}`}>
+                <MessageBubble role={msg?.role} content={msg?.content} />
+              </div>
+            );
           })}
         </div>
       )}
