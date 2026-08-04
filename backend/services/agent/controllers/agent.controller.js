@@ -20,14 +20,14 @@ export const agent = async (req, res) => {
       content: prompt.trim(),
     });
 
-    await addMessages(conversationId, "user", prompt.trim());
-
     const result = await graph.invoke({
       prompt: prompt.trim(),
       conversationId,
     });
 
     const response = result.aiResponse;
+
+    await addMessages(conversationId, "user", prompt.trim());
 
     await addMessages(conversationId, "assistant", response);
 
