@@ -1,6 +1,13 @@
 import { getModel } from "../config/llm.model.js";
 
 export const router = async (state) => {
+  if (state.agent && state.agent !== "auto") {
+    return {
+      ...state,
+      agent: state.agent,
+    };
+  }
+
   const llm = await getModel("router");
   const prompt = `You are an agent router.
 
@@ -9,9 +16,6 @@ export const router = async (state) => {
   - chat
   - search
   - code
-  - pdf
-  - ppt
-  - imageGen
 
   Rules: 
 
@@ -25,6 +29,7 @@ export const router = async (state) => {
   Current eventsm, 
   latest information, 
   news, 
+  current time, 
   recent developments, 
   internet lookup.
 
@@ -35,27 +40,12 @@ export const router = async (state) => {
   architecture, 
   API design.
 
-  ppt:
-  Questions about generate ppts
-  or ppt context.
-
-  pdf: 
-  Questions about generate PDFs
-  or document context.
-
-  imageGen: 
-  Generate image, 
-  create image.
-
 
   return ONLY one word: 
 
   chat
   search
   code
-  ppt
-  pdf
-  imageGen
 
 
   User Query: 
@@ -64,9 +54,12 @@ export const router = async (state) => {
   `;
 
   const response = await llm.invoke(prompt);
+  const routedAgentText = response.content.trim().toLowerCase();
+  const routedAgent =
+    routedAgentText.match(/\b(chat|search|code)\b/)?.[1] || "chat";
 
   return {
     ...state,
-    agent: response.content.trim().toLowerCase(),
+    agent: routedAgent,
   };
 };
