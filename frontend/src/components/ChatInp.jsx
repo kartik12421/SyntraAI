@@ -31,7 +31,7 @@ function ChatInp() {
   const dispatch = useDispatch();
   const { selectedConversation } = useSelector((state) => state.conversation);
   const [value, setValue] = useState("");
-  const [selectedAgents, setSelectedAgents] = useState("Auto");
+  const [selectedAgents, setSelectedAgents] = useState("auto");
   const [isSending, setIsSending] = useState(false);
 
   const handleSendMessage = async () => {
@@ -63,6 +63,7 @@ function ChatInp() {
     const payload = {
       prompt,
       conversationId: conversation._id,
+      agent: selectedAgents,
     };
 
     const optimisticMessageId = `temp-user-${Date.now()}`;
@@ -82,6 +83,7 @@ function ChatInp() {
       dispatch(setMessages(messages));
     } catch (error) {
       dispatch(removeMessage(optimisticMessageId));
+      setValue(prompt);
       console.error("send message error:", error.message);
     } finally {
       setIsSending(false);
@@ -100,7 +102,7 @@ function ChatInp() {
       label: "Chat",
     },
     {
-      id: "coding",
+      id: "code",
       icon: CodeIcon,
       label: "Coding",
     },
@@ -115,12 +117,12 @@ function ChatInp() {
       label: "PPT",
     },
     {
-      id: "image",
+      id: "imageGen",
       icon: Image,
       label: "Image",
     },
     {
-      id: "serach",
+      id: "search",
       icon: GlobeIcon,
       label: "Search",
     },
@@ -132,14 +134,15 @@ function ChatInp() {
         {/* agents mapping */}
         <div className="flex w-[80%] gap-2 pr-2 flex-wrap">
           {agents.map((agent) => {
-            const isActive = selectedAgents === agent.label;
+            const isActive = selectedAgents === agent.id;
             const Icon = agent.icon;
 
             return (
               <div
-              onClick={() => {
-                setSelectedAgents(agent.label)
-              }}
+                key={agent.id}
+                onClick={() => {
+                  setSelectedAgents(agent.id);
+                }}
                 className={`shrink-0 cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all ${
                   isActive
                     ? "bg-linear-to-r from-cyan-500 to-violet-600 text-white border-transparent shadow-[0_1px_8px_rgba(99,102,241,.35)]"
