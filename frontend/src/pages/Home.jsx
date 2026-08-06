@@ -43,7 +43,7 @@ function Home({ onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0f14] text-white overflow-hidden">
+    <div className="min-h-screen min-w-0 bg-[#0d0f14] text-white overflow-hidden">
       {userData ? (
         <div className="flex h-screen w-full">
           <Sidebar />
