@@ -229,10 +229,10 @@ function Sidebar() {
         {/* footer */}
         <div className="px-3.5 py-3.5">
           {userData ? (
-            <div className="flex items-center gap2.5 cursor-pointer rounded-xl px-3 py-2.5 hover:bg-white/6 transition-colors duration-150">
+            <div className="flex items-center gap-2.5 cursor-pointer rounded-xl px-3 py-2.5 hover:bg-white/6 transition-colors duration-150">
               <div className="relative shrink-0">
                 {/* profile image */}
-                {userData?.avatar || !imageError ? (
+                {userData?.avatar && !imageError ? (
                   <img
                     className="w-9 h-9 rounded-[10px] object-cover border-2 border-cyan-400"
                     src={userData?.avatar}

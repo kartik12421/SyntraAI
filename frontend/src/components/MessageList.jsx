@@ -32,10 +32,10 @@ function MessageList() {
               SyntraAI
             </h1>
             <p className="text-[20px] font-semibold tracking-tight text-slate-400">
-              Your persional AI assistant, How may i help you
+              Your personal AI assistant, how may I help you?
             </p>
             <p className="text-[20px] font-semibold tracking-tight text-slate-300">
-              I can help you with - idea, code, pdf, ppt, image and searching on
+              I can help you with ideas, code, pdf, ppt, image, and searching on
               web.
             </p>
           </div>
@@ -44,7 +44,7 @@ function MessageList() {
             {[
               "Build a dashboard",
               "Create a image of a puppy",
-              "Write a summery not on a topic",
+              "Write a summary note on a topic",
             ].map((s) => (
               <button
                 key={s}
@@ -59,8 +59,13 @@ function MessageList() {
         <div className="space-y-4">
           {messages?.map((msg, i) => {
             return (
+              // message Bubbles
               <div key={msg?._id || `${msg?.role}-${i}`}>
-                <MessageBubble role={msg?.role} content={msg?.content} />
+                <MessageBubble
+                  role={msg?.role}
+                  content={msg?.content}
+                  images={msg?.images || []}
+                />
               </div>
             );
           })}

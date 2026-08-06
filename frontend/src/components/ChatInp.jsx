@@ -55,7 +55,7 @@ function ChatInp() {
       dispatch(
         setConversationTitle({
           conversationId: conversation._id,
-          title: value.slice(0, 20),
+          title: prompt.slice(0, 20),
         }),
       );
     }
@@ -167,7 +167,7 @@ function ChatInp() {
           }}
           value={value}
           rows={2}
-          placeholder="Ask me something..."
+          placeholder="Ask Anything..."
           className="w-full bg-transparent outline-none resize-none text-[14px] text-slate-200 placeholder:text-slate-600 leading-relaxed scrollbar-none [&::-webkit-scrollbar]:hidden disabled:opacity-50"
         />
         <div className="flex items-center justify-between">
