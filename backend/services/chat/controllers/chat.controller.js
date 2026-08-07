@@ -58,7 +58,7 @@ export const updateConversation = async (req, res) => {
 //messages
 export const saveMessage = async (req, res) => {
   try {
-    const { conversationId, role, content, images } = req.body;
+    const { conversationId, role, content, images, artifacts } = req.body;
     if (!conversationId) {
       return res.status(400).json({ message: "conversation id missing" });
     }
@@ -81,6 +81,7 @@ export const saveMessage = async (req, res) => {
       content: content.trim(),
       role,
       images,
+      artifacts,
     });
 
     conversation.updatedAt = new Date();

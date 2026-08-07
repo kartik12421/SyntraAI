@@ -43,46 +43,50 @@ function ChatInp() {
     setIsSending(true);
     setValue("");
 
-    let conversation = selectedConversation;
-    if (!conversation?._id) {
-      conversation = await createConversation();
-      dispatch(addConversations(conversation));
-      dispatch(setSelectConversations(conversation));
-    }
-
-    if (conversation.title == "New Chat") {
-      await updateConversation({ id: conversation?._id, title: prompt });
-      dispatch(
-        setConversationTitle({
-          conversationId: conversation._id,
-          title: prompt.slice(0, 20),
-        }),
-      );
-    }
-
-    const payload = {
-      prompt,
-      conversationId: conversation._id,
-      agent: selectedAgents,
-    };
-
-    const optimisticMessageId = `temp-user-${Date.now()}`;
-    dispatch(
-      addMessage({
-        _id: optimisticMessageId,
-        conversationId: conversation._id,
-        role: "user",
-        content: prompt,
-        optimistic: true,
-      }),
-    );
+    let optimisticMessageId;
 
     try {
+      let conversation = selectedConversation;
+      if (!conversation?._id) {
+        conversation = await createConversation();
+        dispatch(addConversations(conversation));
+        dispatch(setSelectConversations(conversation));
+      }
+
+      if (conversation.title == "New Chat") {
+        await updateConversation({ id: conversation._id, title: prompt });
+        dispatch(
+          setConversationTitle({
+            conversationId: conversation._id,
+            title: prompt.slice(0, 20),
+          }),
+        );
+      }
+
+      const payload = {
+        prompt,
+        conversationId: conversation._id,
+        agent: selectedAgents,
+      };
+
+      optimisticMessageId = `temp-user-${Date.now()}`;
+      dispatch(
+        addMessage({
+          _id: optimisticMessageId,
+          conversationId: conversation._id,
+          role: "user",
+          content: prompt,
+          optimistic: true,
+        }),
+      );
+
       await sendMessage(payload);
       const messages = await getMessages(conversation._id);
       dispatch(setMessages(messages));
     } catch (error) {
-      dispatch(removeMessage(optimisticMessageId));
+      if (optimisticMessageId) {
+        dispatch(removeMessage(optimisticMessageId));
+      }
       setValue(prompt);
       console.error("send message error:", error.message);
     } finally {

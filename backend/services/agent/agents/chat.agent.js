@@ -7,38 +7,40 @@ import { getModel } from "../config/llm.model.js";
 import { getMemory } from "../config/memory.js";
 
 export const chatAgent = async (state) => {
-  const llm = await getModel("chat");
+  try {
+    const llm = await getModel("chat");
 
-  const history = await getMemory(state.conversationId);
+    const history = await getMemory(state.conversationId);
 
-  const searchAnswerText =
-    typeof state.searchAnswer === "string" && state.searchAnswer.trim()
-      ? state.searchAnswer.trim()
-      : "";
+    const searchAnswerText =
+      typeof state.searchAnswer === "string" && state.searchAnswer.trim()
+        ? state.searchAnswer.trim()
+        : "";
 
-  const searchResultsText =
-    state.searchResults && state.searchResults.length
-      ? state.searchResults
-          .slice(0, 5)
-          .map(
-            (result, index) =>
-              `Result ${index + 1}: ${result.title || result.url || "No title"}\n${result.url || ""}\n${result.content || ""}`,
-          )
-          .join("\n\n---\n\n")
-      : "";
+    const searchResultsText =
+      state.searchResults && state.searchResults.length
+        ? state.searchResults
+            .slice(0, 5)
+            .map(
+              (result, index) =>
+                `Result ${index + 1}: ${result.title || result.url || "No title"}\n${result.url || ""}\n${result.content || ""}`,
+            )
+            .join("\n\n---\n\n")
+        : "";
 
-  const imageContext =
-    state.images && state.images.length
-      ? `\nRelated images:\n${state.images.join("\n")}`
-      : "";
+    const imageContext =
+      state.images && state.images.length
+        ? `\nRelated images:\n${state.images.join("\n")}`
+        : "";
 
-  const searchContext = searchAnswerText || searchResultsText
-    ? `\nWEB Search Results:\n${
-        searchAnswerText ? `\nSearch answer: ${searchAnswerText}\n` : ""
-      }${searchResultsText ? `\n${searchResultsText}\n` : ""}\nAnswer the user using only the above search results and related images if relevant. Do not say you cannot access real-time data when the results clearly provide current information.${imageContext}\n\n`
-    : ``;
+    const searchContext =
+      searchAnswerText || searchResultsText
+        ? `\nWEB Search Results:\n${
+            searchAnswerText ? `\nSearch answer: ${searchAnswerText}\n` : ""
+          }${searchResultsText ? `\n${searchResultsText}\n` : ""}\nAnswer the user using only the above search results and related images if relevant. Do not say you cannot access real-time data when the results clearly provide current information.${imageContext}\n\n`
+        : ``;
 
-  const sysPrompt = `You are SyntraAI, an intelligent AI assistant.
+    const sysPrompt = `You are SyntraAI, an intelligent AI assistant.
 
 If searchContext exists:
 - Use search results to answer directly.
@@ -60,26 +62,31 @@ Formatting:
 - Never write headings and content on the same line.
 - Never generate large walls of text.
 `;
-  const messages = [new SystemMessage(sysPrompt)];
+    const messages = [new SystemMessage(sysPrompt)];
 
-  if (searchContext) {
-    messages.push(new SystemMessage(searchContext));
-  }
-
-  history.forEach((msg) => {
-    if (msg.role == "user") {
-      messages.push(new HumanMessage(msg.content));
-    } else {
-      messages.push(new AIMessage(msg.content));
+    if (searchContext) {
+      messages.push(new SystemMessage(searchContext));
     }
-  });
 
-  messages.push(new HumanMessage(state.prompt));
+    history.forEach((msg) => {
+      if (msg.role == "user") {
+        messages.push(new HumanMessage(msg.content));
+      } else {
+        messages.push(new AIMessage(msg.content));
+      }
+    });
 
-  const response = await llm.invoke(messages);
+    messages.push(new HumanMessage(state.prompt));
 
-  return {
-    ...state,
-    aiResponse: response.content,
-  };
+    const response = await llm.invoke(messages);
+
+    return {
+      ...state,
+      aiResponse: response.content,
+    };
+  } catch (error) {
+    // This function is a LangGraph node, not an Express handler, so it does
+    // not receive `res`. Propagate the failure to the controller instead.
+    throw new Error(`chat agent failed: ${error.message}`);
+  }
 };
