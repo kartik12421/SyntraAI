@@ -97,6 +97,7 @@ ${state.prompt}
             id: Date.now(),
             type: "project_code",
             files: data.files || [],
+            title: state.prompt,
           },
         ],
       };

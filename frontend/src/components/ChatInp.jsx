@@ -23,6 +23,7 @@ import {
 import {
   addMessage,
   removeMessage,
+  setArtifacts,
   setMessages,
 } from "../redux/messageSlice.js";
 import { updateConversation } from "../../features/updateconversation.js";
@@ -80,7 +81,8 @@ function ChatInp() {
         }),
       );
 
-      await sendMessage(payload);
+      const data = await sendMessage(payload);
+      dispatch(setArtifacts(data.artifacts || []));
       const messages = await getMessages(conversation._id);
       dispatch(setMessages(messages));
     } catch (error) {

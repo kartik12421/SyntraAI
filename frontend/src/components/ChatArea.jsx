@@ -4,7 +4,11 @@ import MessageList from "./MessageList";
 import ChatInp from "./ChatInp";
 import { useDispatch, useSelector } from "react-redux";
 import getMessages from "../../features/getMessages.js";
-import { clearMessages, mergeFetchedMessages } from "../redux/messageSlice.js";
+import {
+  clearMessages,
+  mergeFetchedMessages,
+  setArtifacts,
+} from "../redux/messageSlice.js";
 
 function ChatArea() {
   const { selectedConversation } = useSelector((state) => state.conversation);
@@ -14,13 +18,22 @@ function ChatArea() {
     const getMessage = async () => {
       try {
         if (selectedConversation?._id) {
-          if (selectedConversation.title == "New Chat") return;
+          if (selectedConversation.title == "New Chat") {
+            dispatch(clearMessages());
+            dispatch(setArtifacts([]));
+            return;
+          }
           const data = await getMessages(selectedConversation._id);
           dispatch(mergeFetchedMessages(data));
+          let latestArtifactMessage = [...data]
+            .reverse()
+            .find((msg) => msg.artifacts?.length > 0);
+          dispatch(setArtifacts(latestArtifactMessage?.artifacts || []));
           return;
         }
 
         dispatch(clearMessages());
+        dispatch(setArtifacts([]));
       } catch (error) {
         console.error("get messages error:", error.message);
       }
