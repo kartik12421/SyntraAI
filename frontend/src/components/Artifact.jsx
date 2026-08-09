@@ -1,38 +1,131 @@
-import React, { useState } from "react";
-import { Code, PanelRight } from "lucide-react";
+import { useState } from "react";
+import {
+  Code,
+  CodeXmlIcon,
+  Copy,
+  EyeDashed,
+  PanelLeft,
+  PanelRight,
+} from "lucide-react";
 import { useSelector } from "react-redux";
-import { motion } from "motion/react";
+import { easeInOut, motion } from "motion/react";
 
 function Artifact() {
   const [collapsed, setCollapsed] = useState(false);
   const { artifacts = [] } = useSelector((state) => state.message);
+  const [tab, setTab] = useState("code");
+  const [activeFile, setActiveFile] = useState(0);
 
   if (artifacts.length == 0) return;
   return (
     <motion.div
-      initial={{}}
-      animate={{}}
-      transition={{}}
+      initial={{ width: 380 }}
+      animate={{ width: collapsed ? 53 : 380 }}
+      transition={{
+        duration: 0.5,
+        ease: easeInOut,
+      }}
       className="hidden lg:flex h-full border border-white/6 flex-col overflow-hidden shrink-0 w-62.5"
     >
-      <div className="flex flex-col h-full bg-[#0d0f14]">
-        <div className="h-14 px-4 border-b border-white/6 flex items-center gap-3 shrink-0">
-          <button
-            className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer shrink-0"
-            onClick={() => setCollapsed((prev) => !prev)}
-          >
-            <PanelRight />
-          </button>
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            <div className="flex items-center justify-center w-6 h-6 rounded-md bg-indigo-500/10 border border-indigo-500/20 shrink-0">
-              <Code className="text-cyan-400" />
-            </div>
-            <div className="text-[16px] font-medium text-slate-400 truncate">
-              {artifacts[0]?.title}
+      {!collapsed ? (
+        // editor open
+        <div className="flex flex-col h-full bg-[#0d0f14]">
+          <div className="h-14 px-4 border-b border-white/6 flex items-center gap-3 shrink-0">
+            <button
+              className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer shrink-0"
+              onClick={() => setCollapsed((prev) => !prev)}
+            >
+              <PanelRight />
+            </button>
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="flex items-center justify-center w-6 h-6 rounded-md bg-indigo-500/10 border border-indigo-500/20 shrink-0">
+                <Code className="text-cyan-400" />
+              </div>
+              <div className="text-[16px] font-medium text-slate-400 truncate">
+                {artifacts[0]?.title}
+              </div>
+
+              <div className="flex items-center gap-1 shrink-0">
+                <button className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer">
+                  <Copy />
+                </button>
+              </div>
+              {/* code and preview button */}
+              <div className="flex items-center gap-1 bg-white/4 border border-white/6 p-1 rounded-lg">
+                <button
+                  onClick={() => setTab("code")}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 ${
+                    tab === "code"
+                      ? "bg-cyan-500 text-white"
+                      : "text-slate-500 hover:text-slate-200"
+                  }`}
+                >
+                  <CodeXmlIcon /> Code
+                </button>
+                <button
+                  onClick={() => setTab("preview")}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 ${
+                    tab === "preview"
+                      ? "bg-indigo-500 text-white"
+                      : "text-slate-500 hover:text-slate-200"
+                  }`}
+                >
+                  <EyeDashed /> Preview
+                </button>
+              </div>
             </div>
           </div>
+          <div className="flex min-w-0 border-b border-white/6 overflow-x-auto no-scrollbar shrink-0">
+            {artifacts[0]?.files?.map((f, index) => (
+              <button
+                key={f?.name ?? index}
+                onClick={() => setActiveFile(index)}
+                className={`px-4 py-2.5 text-[11px] font-medium whitespace-nowrap transition-colors duration-150 border-r border-white/5 relative cursor-pointer bg-transparent hover:bg-white/5 shrink-0 ${
+                  activeFile === index
+                    ? "text-cyan-400 hover:text-cyan-300"
+                    : "text-slate-500 hover:text-slate-200"
+                }`}
+              >
+                {f?.name}
+                {activeFile === index && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400 rounded-t-full" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        // editor close
+        <div className="flex flex-col h-full bg-[#0d0f14]">
+          <div className="h-14 px-4 border-b border-white/6 flex items-center gap-3 shrink-0">
+            <button
+              className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer shrink-0"
+              onClick={() => setCollapsed((prev) => !prev)}
+            >
+              <PanelLeft />
+            </button>
+          </div>
+          <div className="flex h-auto items-center justify-center gap-2 flex-1 min-w-0">
+            {artifacts[0]?.files?.map((f, index) => (
+              <button
+                key={f?.name ?? index}
+                onClick={() => setActiveFile(index)}
+                className={`relative text-[12px] font-medium tracking-widest uppercase whitespace-nowrap ${
+                  activeFile === index
+                    ? "text-cyan-400"
+                    : "text-slate-600 hover:text-slate-400"
+                }`}
+                style={{ writingMode: "vertical-lr" }}
+              >
+                {f?.name}
+                {activeFile === index && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400 rounded-t-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
