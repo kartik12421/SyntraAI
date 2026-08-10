@@ -1,5 +1,41 @@
 import { getModel } from "../config/llm.model.js";
 
+const getResponseText = (content) => {
+  if (typeof content === "string") return content.trim();
+
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => (typeof part === "string" ? part : part?.text || ""))
+      .join("")
+      .trim();
+  }
+
+  return "";
+};
+
+const parseGeneratedFiles = (content) => {
+  const text = getResponseText(content);
+  const blocks = [...text.matchAll(/```([\w-]*)\s*\r?\n([\s\S]*?)(?:```|$)/g)]
+    .map((match) => ({ language: match[1].toLowerCase(), content: match[2].trim() }))
+    .filter((block) => block.content);
+
+  const fileDefinitions = [
+    { name: "index.html", languages: ["html"] },
+    { name: "style.css", languages: ["css"] },
+    { name: "script.js", languages: ["javascript", "js"] },
+  ];
+  const files = fileDefinitions.map((file, index) => {
+    const block = blocks.find((item) => file.languages.includes(item.language)) || blocks[index];
+    return block ? { name: file.name, content: block.content } : null;
+  }).filter(Boolean);
+
+  if (!files.some((file) => file.name === "index.html")) {
+    throw new Error("The code model did not return an HTML file. Please try again.");
+  }
+
+  return { files };
+};
+
 export const codingAgent = async (state) => {
   try {
     const intentLlm = await getModel("intent");
@@ -21,7 +57,7 @@ User Request:
 ${state.prompt}
         `);
 
-    const intent = intentRes.content.trim();
+    const intent = getResponseText(intentRes.content);
     let prompt;
 
     // for code generation
@@ -50,44 +86,19 @@ Rules:
 - Beautiful spacing
 - Single page unless user asks otherwise.
 
-Return ONLY valid JSON.
-
-Schema:
-
-{
-  "files": [
-    {
-      "name": "index.html",
-      "content": "..."
-    },
-    {
-      "name": "style.css",
-      "content": "..."
-    },
-    {
-      "name": "script.js",
-      "content": "..."
-    }
-  ]
-}
-
 Rules:
 
-- Output must start with {
-- Output must end with }
-- No markdown
-- No explanation
-- No extra text
-- No \`\`\`
-- Never mention intent
+- Return exactly three code blocks, in this order: html, css, javascript.
+- Use \`\`\`html for index.html, \`\`\`css for style.css, and \`\`\`javascript for script.js.
+- Do not add any text outside the code blocks.
+- Keep each file concise enough to finish completely.
 
 User Request:
 ${state.prompt}
         `;
 
       const response = await llm.invoke(prompt);
-
-      const data = JSON.parse(response.content);
+      const data = parseGeneratedFiles(response.content);
 
       return {
         ...state,
@@ -113,7 +124,7 @@ ${state.prompt}`;
       const response = await llm.invoke(prompt);
       return {
         ...state,
-        aiResponse: response.content,
+        aiResponse: getResponseText(response.content),
         artifacts: [],
       };
     }
