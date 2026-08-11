@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Check,
   Code,
   CodeXmlIcon,
   Copy,
@@ -10,12 +11,20 @@ import {
 import { useSelector } from "react-redux";
 import { easeInOut, motion } from "motion/react";
 import Editor from "@monaco-editor/react";
+import copyToClipboard from "../../features/copyToClipboard";
 
 function Artifact() {
   const [collapsed, setCollapsed] = useState(false);
   const { artifacts = [] } = useSelector((state) => state.message);
   const [tab, setTab] = useState("code");
   const [activeFile, setActiveFile] = useState(0);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await copyToClipboard(file?.content || "");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   if (artifacts.length == 0) return;
 
@@ -111,8 +120,16 @@ function Artifact() {
               </div>
 
               <div className="flex items-center gap-1 shrink-0">
-                <button className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer">
-                  <Copy />
+                <button
+                  onClick={handleCopy}
+                  title="Copy code"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer"
+                >
+                  {copied ? (
+                    <Check className="text-cyan-400" />
+                  ) : (
+                    <Copy />
+                  )}
                 </button>
               </div>
               {canPreview && (
@@ -120,22 +137,20 @@ function Artifact() {
                   {/* code button */}
                   <button
                     onClick={() => setTab("code")}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 ${
-                      tab === "code"
+                    className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 ${tab === "code"
                         ? "bg-cyan-500 text-white"
                         : "text-slate-500 hover:text-slate-200"
-                    }`}
+                      }`}
                   >
                     <CodeXmlIcon /> Code
                   </button>
                   {/* preview button */}
                   <button
                     onClick={() => setTab("preview")}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 ${
-                      tab === "preview"
+                    className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 ${tab === "preview"
                         ? "bg-indigo-500 text-white"
                         : "text-slate-500 hover:text-slate-200"
-                    }`}
+                      }`}
                   >
                     <EyeDashed /> Preview
                   </button>
@@ -151,11 +166,10 @@ function Artifact() {
                 <button
                   key={f?.name ?? index}
                   onClick={() => setActiveFile(index)}
-                  className={`px-4 py-2.5 text-[11px] font-medium whitespace-nowrap transition-colors duration-150 border-r border-white/5 relative cursor-pointer bg-transparent hover:bg-white/5 shrink-0 ${
-                    activeFile === index
+                  className={`px-4 py-2.5 text-[11px] font-medium whitespace-nowrap transition-colors duration-150 border-r border-white/5 relative cursor-pointer bg-transparent hover:bg-white/5 shrink-0 ${activeFile === index
                       ? "text-cyan-400 hover:text-cyan-300"
                       : "text-slate-500 hover:text-slate-200"
-                  }`}
+                    }`}
                 >
                   {f?.name}
                   {activeFile === index && (
@@ -222,24 +236,14 @@ function Artifact() {
               <PanelLeft />
             </button>
           </div>
-          <div className="flex h-auto items-center justify-center gap-2 flex-1 min-w-0">
-            {artifacts[0]?.files?.map((f, index) => (
-              <button
-                key={f?.name ?? index}
-                onClick={() => setActiveFile(index)}
-                className={`relative text-[12px] font-medium tracking-widest uppercase whitespace-nowrap ${
-                  activeFile === index
-                    ? "text-cyan-400"
-                    : "text-slate-600 hover:text-slate-400"
-                }`}
-                style={{ writingMode: "vertical-lr" }}
-              >
-                {f?.name}
-                {activeFile === index && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-cyan-400 rounded-t-full" />
-                )}
-              </button>
-            ))}
+          <div className="flex h-auto items-center justify-center px-2 text-center flex-1 min-w-0">
+            <div
+              className="relative text-[11px] font-medium tracking-widest uppercase text-slate-400 hover:text-slate-200"
+              style={{ writingMode: "vertical-lr" }}
+              title={artifacts[0]?.title}
+            >
+              {artifacts[0]?.title || "Artifact"}
+            </div>
           </div>
         </div>
       )}

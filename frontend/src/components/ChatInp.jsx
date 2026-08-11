@@ -171,6 +171,12 @@ function ChatInp() {
           onChange={(e) => {
             setValue(e.target.value);
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSendMessage();
+            }
+          }}
           value={value}
           rows={2}
           placeholder="Ask Anything..."
