@@ -50,13 +50,13 @@ ${state.prompt}
 
     return {
       ...state,
-      aiResponse: `## 🖼️ Image Generated Successfully
+      aiResponse: `🖼️ Image Generated Successfully
 
 ![Generated Image](${downloadUrl})
 
 📥 [Download Image](${downloadUrl})
 
-⏳ Link expires in 10 minutes.`,
+⏳ Link expires in 24 Hours.`,
     };
   } catch (error) {
     return {

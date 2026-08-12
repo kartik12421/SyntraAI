@@ -213,7 +213,7 @@ function MessageBubble({ role, content, images }) {
                 <img
                   src={src}
                   alt={alt}
-                  className="rounded-lg my-4 max-w-full border border-white/10"
+                  className="rounded-lg my-4 max-w-full border border-white/10 h-98 w-98"
                 />
               ),
 
