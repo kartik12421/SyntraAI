@@ -19,16 +19,6 @@ export const getModel = async (agent) => {
       return groq;
     case "code":
       return codeModel;
-    //   case "pdf":
-    //     return "pdf";
-    //     break;
-    //   case "ppt":
-    //     return "ppt";
-    //     break;
-    //   case "imageGen":
-    //     return "imageGen";
-    //     break;
-
     default:
       return groq;
   }
