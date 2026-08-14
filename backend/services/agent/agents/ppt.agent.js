@@ -70,7 +70,6 @@ ${state.prompt}
 Link expires in 24 hours.`,
     };
   } catch (error) {
-    console.log(error);
     return {
       ...state,
       aiResponse: "Failed to generate PPT 😓",
