@@ -29,6 +29,7 @@ app.use("/api/auth", proxy(process.env.AUTH_SERVICE));
 app.use("/api/chat", protectRoute, proxyWithHeader(process.env.CHAT_SERVICE));
 app.use("/api/me", protectRoute, getCurrentUser);
 app.use("/api/agent", protectRoute, proxy(process.env.AGENT_SERVICE));
+app.use("/api/payment", protectRoute, proxyWithHeader(process.env.PAYMENT_SERVICE));
 
 //routes
 app.get("/", (req, res) => {
