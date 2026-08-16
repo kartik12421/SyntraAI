@@ -33,3 +33,31 @@ export const createOrder = async (params) => {
     return res.status(500).json({ message: `payment error: ${error.message}` });
   }
 };
+
+export const verifyPayment = async () => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
+
+    const genSign = crypto
+      .createHmac("sha512", process.env.RAZORPAY_API_KEY)
+      .update(`${razorpay_order_id} | ${razorpay_payment_id}`)
+      .digest("hex");
+
+    if (genSign != razorpay_signature) {
+      return res.status(400).json({ message: "payment verification failed" });
+    }
+
+    const payment = await Payment.findOne({ orderId: razorpay_payment_id });
+
+    if (!payment) {
+      return res.status(404).json({ message: "payment not found" });
+    }
+
+    payment.status = "paid";
+    payment.paymentId = razorpay_payment_id;
+    await payment.save()
+  } catch (error) {
+    console.log(error);
+  }
+};
