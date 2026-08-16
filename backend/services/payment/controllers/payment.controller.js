@@ -56,8 +56,16 @@ export const verifyPayment = async () => {
 
     payment.status = "paid";
     payment.paymentId = razorpay_payment_id;
-    await payment.save()
+    await payment.save();
+
+    await axios.post(`${process.env.AUTH_SERVICE}/update-plan`, {
+      userId: payment?.userId,
+      plan: payment?.plan,
+      credits: payment?.credits,
+    });
+
+    return res.status(200).json({ message: "Payment verified" });
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({ message: `Payment verify error: ${error.message}` });
   }
 };
