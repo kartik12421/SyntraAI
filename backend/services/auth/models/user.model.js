@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
     avatar: String,
     plan: {
       type: String,
-      default: free,
+      default: "free",
     },
     credits: {
       type: Number,

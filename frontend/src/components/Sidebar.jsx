@@ -20,11 +20,13 @@ import {
 import { createConversation } from "../../features/createConversation.js";
 import logOut from "../../features/logOut.js";
 import { clearUserData } from "../redux/userSlice.js";
+import Payment from "./Payment.jsx";
 
 function Sidebar() {
   const [collapse, setCollapse] = useState(false);
   const [isActive, setIsActive] = useState(null);
   const [imageError, setImageError] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
   const { conversations, selectedConversation } = useSelector(
@@ -259,7 +261,12 @@ function Sidebar() {
               </div>
 
               <div className="flex gap-1">
-                <button className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-yellow-600 cursor-pointer hover:bg-white/8 hover:text-slate-400 transition-all duration-150">
+                <button
+                  onClick={() => {
+                    setShowPayment(true);
+                  }}
+                  className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-yellow-600 cursor-pointer hover:bg-white/8 hover:text-slate-400 transition-all duration-150"
+                >
                   <Coins size={18} />
                 </button>
                 <button
@@ -276,6 +283,13 @@ function Sidebar() {
           )}
         </div>
       </div>
+
+      <Payment
+        open={showPayment}
+        onClose={() => {
+          setShowPayment(false);
+        }}
+      />
     </div>
   );
 }
