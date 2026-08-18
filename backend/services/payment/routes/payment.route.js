@@ -4,9 +4,9 @@ import {
   verifyPayment,
 } from "../controllers/payment.controller.js";
 
-const paymentrouter = express.Router();
+const paymentRouter = express.Router();
 
-paymentrouter.post("/create-order", createOrder);
-paymentrouter.post("/verify-order", verifyPayment);
+paymentRouter.post("/create-order", createOrder);
+paymentRouter.post("/verify-order", verifyPayment);
 
-export default paymentrouter;
+export default paymentRouter;

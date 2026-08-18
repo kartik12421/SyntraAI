@@ -7,7 +7,6 @@ async function sendMessage(payload) {
   } catch (error) {
     const message =
       error.response?.data?.message || error.message || "send message failed";
-    console.error("send message error:", message);
     throw new Error(message, { cause: error });
     return null;
   }

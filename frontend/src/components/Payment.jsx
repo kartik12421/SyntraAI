@@ -2,9 +2,17 @@ import React from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CrownIcon, X } from "lucide-react";
 import { useSelector } from "react-redux";
+import { createPayment } from "../../features/createPayment.js";
 
 function Payment({ open, onClose }) {
   const { userData } = useSelector((state) => state.user);
+
+  const handleLevelUp = async () => {
+    try {
+      const data = await createPayment(plan);
+      const options ={}
+    } catch (error) {}
+  };
   return (
     <AnimatePresence>
       {open && (
@@ -87,7 +95,10 @@ function Payment({ open, onClose }) {
                 <h3 className="text-white font-semibold">Starter</h3>
                 <p className="text-cyan-300 text-2xl font-bold mt-2">₹199/-</p>
                 <p className="text-slate-400 text-sm mt-1">500 Credits</p>
-                <button className="mt-4 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-2 text-white">
+                <button
+                  onClick={() => handleLevelUp("starter")}
+                  className="mt-4 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-2 text-white"
+                >
                   Level Up
                 </button>
               </div>
@@ -98,7 +109,10 @@ function Payment({ open, onClose }) {
                 <h3 className="text-white font-semibold">Pro</h3>
                 <p className="text-cyan-300 text-2xl font-bold mt-2">₹599/-</p>
                 <p className="text-slate-400 text-sm mt-1">1000 Credits</p>
-                <button className="mt-4 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-2 text-white">
+                <button
+                  onClick={() => handleLevelUp("pro")}
+                  className="mt-4 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-2 text-white"
+                >
                   Level Up
                 </button>
               </div>

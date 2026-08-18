@@ -9,7 +9,6 @@ export const getCurrentUser = async () => {
       error.response?.data?.message ||
       error.message ||
       "current user not found";
-    console.error("Get current user error:", message);
     throw new Error(message, { cause: error });
   }
 };

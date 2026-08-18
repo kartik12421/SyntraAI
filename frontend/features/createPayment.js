@@ -1,8 +1,8 @@
 import api from "../utils/axios";
 
-const getConversation = async () => {
+export const createPayment = async (payload) => {
   try {
-    const { data } = await api.get("/api/chat/get-conversation");
+    const { data } = await api.post("/api/payment/create-order", payload);
     return data;
   } catch (error) {
     const message =
@@ -10,7 +10,6 @@ const getConversation = async () => {
       error.message ||
       "error in get conversation";
     throw new Error(message, { cause: error });
+    return [];
   }
 };
-
-export default getConversation;

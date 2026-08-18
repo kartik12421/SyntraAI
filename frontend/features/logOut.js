@@ -7,7 +7,6 @@ async function logOut() {
   } catch (error) {
     const message =
       error.response?.data?.message || error.message || "LogOut failed";
-    console.error("LogOut error:", message);
     throw new Error(message, { cause: error });
   }
 }

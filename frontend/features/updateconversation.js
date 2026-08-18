@@ -9,7 +9,6 @@ export const updateConversation = async (payload) => {
       error.response?.data?.message ||
       error.message ||
       "error in update conversation";
-    console.error("update conversation error:", message);
     throw new Error(message, { cause: error });
   }
 };

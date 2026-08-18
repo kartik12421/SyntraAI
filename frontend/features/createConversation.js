@@ -9,7 +9,6 @@ export const createConversation = async () => {
       error.response?.data?.message ||
       error.message ||
       "error in create conversation";
-    console.error("create conversation error:", message);
     throw new Error(message, { cause: error });
   }
 };
