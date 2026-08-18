@@ -50,7 +50,7 @@ function Payment({ open, onClose }) {
                       Current Plan
                     </p>
                     <h3 className="text-purple-400 text-xl">
-                      {userData?.plan || "Free"}
+                      {userData?.plan || "free"}
                     </h3>
                   </div>
                   <CrownIcon className="text-yellow-400" />
@@ -66,9 +66,18 @@ function Payment({ open, onClose }) {
                   </div>
 
                   {/* progress bar */}
-                  <div></div>
-
-
+                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className="h-full bg-indigo-500 transition-all duration-500"
+                      style={{
+                        width: `${
+                          ((userData?.credits || 0) /
+                            (userData?.totalCredits || 1)) *
+                          100
+                        }%`,
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
