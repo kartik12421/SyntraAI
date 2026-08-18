@@ -30,6 +30,10 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         avatar: user.avatar,
+        plan: user.plan,
+        credits: user.credits,
+        totalCredits: user.totalCredits,
+        planExpiredAt: user.planExpiredAt,
       }),
       "EX",
       7 * 24 * 60 * 60,
@@ -42,7 +46,18 @@ export const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({ user });
+    return res.status(200).json({
+      user: {
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        plan: user.plan,
+        credits: user.credits,
+        totalCredits: user.totalCredits,
+        planExpiredAt: user.planExpiredAt,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ message: `LogIn failed: ${error.message}` });
   }
@@ -78,17 +93,21 @@ export const updateUserPayment = async (req, res) => {
     user.planExpiredAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await user.save();
 
-    const sessionId = req.cookie?.session;
-    await redis.set(`session:${sessionId}`, sessionId, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      plan: user.plan,
-      credits: user.credits,
-      totalCredits: user.totalCredits,
-      planExpiredAt: user.planExpiredAt,
-    });
+    const sessionId = req.cookies?.session;
+    const session = await redis.get(`session:${sessionId}`);
+    const parsed = session ? JSON.parse(session) : {};
+    await redis.set(
+      `session:${sessionId}`,
+      JSON.stringify({
+        ...parsed,
+        plan: user.plan,
+        credits: user.credits,
+        totalCredits: user.totalCredits,
+        planExpiredAt: user.planExpiredAt,
+      }),
+      "EX",
+      7 * 24 * 60 * 60,
+    );
 
     return res
       .status(200)
