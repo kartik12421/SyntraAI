@@ -81,6 +81,28 @@ function Payment({ open, onClose }) {
                 </div>
               </div>
             </div>
+            {/* plans */}
+            <div className="px-5 flex-1 overflow-auto space-y-4">
+              <div className="rounded-xl border border-white/10 p-4">
+                <h3 className="text-white font-semibold">Starter</h3>
+                <p className="text-cyan-300 text-2xl font-bold mt-2">₹199/-</p>
+                <p className="text-slate-400 text-sm mt-1">500 Credits</p>
+                <button className="mt-4 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-2 text-white">
+                  Level Up
+                </button>
+              </div>
+            </div>
+
+            <div className="px-5 flex-1 overflow-auto space-y-4">
+              <div className="rounded-xl border border-white/10 p-4">
+                <h3 className="text-white font-semibold">Pro</h3>
+                <p className="text-cyan-300 text-2xl font-bold mt-2">₹599/-</p>
+                <p className="text-slate-400 text-sm mt-1">1000 Credits</p>
+                <button className="mt-4 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-2 text-white">
+                  Level Up
+                </button>
+              </div>
+            </div>
           </motion.div>
         </>
       )}
