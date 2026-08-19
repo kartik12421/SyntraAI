@@ -1,8 +1,10 @@
+import crypto from "crypto";
+import axios from "axios";
 import { PLAN } from "../config/plans.js";
 import razorpay from "../config/razorPay.js";
 import Payment from "../models/payment.model.js";
 
-export const createOrder = async (params) => {
+export const createOrder = async (req, res) => {
   try {
     const { plan } = req.body;
     const userId = req.headers["x-user-id"];
@@ -12,7 +14,7 @@ export const createOrder = async (params) => {
       return res.status(404).json({ message: "plan not found" });
     }
 
-    const order = razorpay.orders.create({
+    const order = await razorpay.orders.create({
       amount: selectedPlan.amount * 100,
       currency: "INR",
       receipt: `receipt-${Date.now()}`,
@@ -22,7 +24,7 @@ export const createOrder = async (params) => {
       userId,
       orderId: order.id,
       amount: selectedPlan.amount,
-      credits: selectedPlan.plan,
+      credits: selectedPlan.credits,
       plan: selectedPlan.id,
       currency: order.currency,
       status: "created",
@@ -34,21 +36,21 @@ export const createOrder = async (params) => {
   }
 };
 
-export const verifyPayment = async () => {
+export const verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       req.body;
 
     const genSign = crypto
-      .createHmac("sha512", process.env.RAZORPAY_API_KEY)
-      .update(`${razorpay_order_id} | ${razorpay_payment_id}`)
+      .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
-    if (genSign != razorpay_signature) {
+    if (genSign !== razorpay_signature) {
       return res.status(400).json({ message: "payment verification failed" });
     }
 
-    const payment = await Payment.findOne({ orderId: razorpay_payment_id });
+    const payment = await Payment.findOne({ orderId: razorpay_order_id });
 
     if (!payment) {
       return res.status(404).json({ message: "payment not found" });

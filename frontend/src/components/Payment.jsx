@@ -1,17 +1,39 @@
 import React from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { CrownIcon, X } from "lucide-react";
+import { AnimatePresence, color, motion } from "motion/react";
+import { CrownIcon, Currency, Key, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { createPayment } from "../../features/createPayment.js";
+import { verifyPayment } from "../../features/verifyPayment.js";
 
 function Payment({ open, onClose }) {
   const { userData } = useSelector((state) => state.user);
 
-  const handleLevelUp = async () => {
+  const handleLevelUp = async (plan) => {
     try {
       const data = await createPayment(plan);
-      const options ={}
-    } catch (error) {}
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_API_KEY,
+        amount: data?.order?.amount,
+        currency: data?.order?.currency,
+        name: "SyntraAI",
+        description: `${data?.plan?.name} Plan`,
+        order_id: data?.order.id,
+        handler: async (res) => {
+          try {
+            const data = verifyPayment(res);
+          } catch (err) {
+            console.log("Payment verification failed:", err);
+          }
+        },
+        theme: {
+          color: "#00d9ff",
+        },
+      };
+      const razorPay = new window.Razorpay(options);
+      razorPay.open();
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <AnimatePresence>
@@ -96,7 +118,7 @@ function Payment({ open, onClose }) {
                 <p className="text-cyan-300 text-2xl font-bold mt-2">₹199/-</p>
                 <p className="text-slate-400 text-sm mt-1">500 Credits</p>
                 <button
-                  onClick={() => handleLevelUp("starter")}
+                  onClick={() => handleLevelUp("standard")}
                   className="mt-4 w-full rounded-lg bg-indigo-600 hover:bg-indigo-700 py-2 text-white"
                 >
                   Level Up

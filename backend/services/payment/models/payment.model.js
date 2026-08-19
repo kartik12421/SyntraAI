@@ -12,7 +12,7 @@ const paymentSchema = new mongoose.Schema(
     },
     paymentId: {
       type: String,
-      required: true,
+      default: null,
     },
     amount: {
       type: Number,
