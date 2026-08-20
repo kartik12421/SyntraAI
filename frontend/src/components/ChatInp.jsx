@@ -27,6 +27,8 @@ import {
   setMessages,
 } from "../redux/messageSlice.js";
 import { updateConversation } from "../../features/updateconversation.js";
+import { getCurrentUser } from "../../features/getCurrentUser.js";
+import { setUserData } from "../redux/userSlice.js";
 
 function ChatInp() {
   const dispatch = useDispatch();
@@ -85,6 +87,12 @@ function ChatInp() {
       dispatch(setArtifacts(data.artifacts || []));
       const messages = await getMessages(conversation._id);
       dispatch(setMessages(messages));
+      try {
+        const currentUser = await getCurrentUser();
+        dispatch(setUserData(currentUser));
+      } catch (error) {
+        console.error("refresh user error:", error.message);
+      }
     } catch (error) {
       if (optimisticMessageId) {
         dispatch(removeMessage(optimisticMessageId));
