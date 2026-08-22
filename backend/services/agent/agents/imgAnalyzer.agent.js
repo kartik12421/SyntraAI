@@ -1,6 +1,7 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { getModel } from "../config/llm.model.js";
 import fs from "fs";
+import { burnCredits } from "../utils/burnCredits.js";
 
 export const imgAnalyzer = async (state) => {
   try {
@@ -40,6 +41,7 @@ Rules:
     ];
 
     const res = await llm.invoke(messages);
+    await burnCredits(state.userId, "imageGen");
     return {
       ...state,
       aiResponse: res.content,
