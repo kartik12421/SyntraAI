@@ -4,29 +4,26 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { vectorStore } from "../config/vectorDb.js";
 import { getModel } from "../config/llm.model.js";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import { burnCredits } from "../utils/burnCredits.js";
 
 export const pdfRag = async (state) => {
+  let parser;
   try {
     const buffer = fs.readFileSync(state.file.path);
-    const pdf = await PDFParse({
-      data: buffer,
-    });
-
-    const res = pdf.getText();
-    const text = res.text;
+    parser = new PDFParse({ data: buffer });
+    const result = await parser.getText();
+    const text = result.text;
 
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 500,
     });
-    const docs = splitter.splitText([text]);
-    const collectioNname = `pdf-${Date.now()}`;
+    const docs = await splitter.splitText(text);
+    const collectionName = `pdf-${Date.now()}`;
     const store = await vectorStore(docs, collectionName);
 
     const releventDocs = await store.similaritySearch(state.prompt, 5);
 
-    const context = releventDocs.map((d) => d.pageContent).join("/n/n");
+    const context = releventDocs.map((d) => d.pageContent).join("\n\n");
 
     const llm = await getModel("pdfRag");
 
@@ -51,18 +48,21 @@ Rules:
             `),
     ];
 
-    const response = llm.invoke(messages);
-    await burnCredits(state.userId, "pdf");
+    const response = await llm.invoke(messages);
     return {
       ...state,
       aiResponse: response.content,
     };
   } catch (error) {
+    console.error("pdfRag error:", error.message);
     return {
       ...state,
       aiResponse: "Failed to analyze PDF 😓",
     };
   } finally {
-    fs.unlink(state.file.path);
+    await parser?.destroy();
+    if (state.file?.path) {
+      fs.promises.unlink(state.file.path).catch(() => {});
+    }
   }
 };

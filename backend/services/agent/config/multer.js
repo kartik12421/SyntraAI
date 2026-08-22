@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const filterFile = (req, file, callback) => {
+const fileFilter = (req, file, callback) => {
   if (
     file.mimetype == "application/pdf" ||
     file.mimetype.startsWith("image/")
@@ -30,6 +30,6 @@ const filterFile = (req, file, callback) => {
 
 export default multer({
   storage,
-  filterFile,
+  fileFilter,
   limits: { fileSize: 20 * 1024 * 1024 },
 });

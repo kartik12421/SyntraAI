@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CodeIcon,
   File,
+  FileText,
   GlobeIcon,
   Image,
   MessageCircleIcon,
@@ -9,6 +10,7 @@ import {
   Paperclip,
   Presentation,
   Send,
+  X,
   Zap,
 } from "lucide-react";
 import sendMessage from "../../features/sendMessage";
@@ -29,6 +31,7 @@ import {
 import { updateConversation } from "../../features/updateconversation.js";
 import { getCurrentUser } from "../../features/getCurrentUser.js";
 import { setUserData } from "../redux/userSlice.js";
+import { useRef } from "react";
 
 function ChatInp() {
   const dispatch = useDispatch();
@@ -36,6 +39,23 @@ function ChatInp() {
   const [value, setValue] = useState("");
   const [selectedAgents, setSelectedAgents] = useState("auto");
   const [isSending, setIsSending] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileRef = useRef(null);
+  const imagePreviewUrl = useMemo(() => {
+    if (!selectedFile?.type.startsWith("image/")) {
+      return null;
+    }
+
+    return URL.createObjectURL(selectedFile);
+  }, [selectedFile]);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl);
+      }
+    };
+  }, [imagePreviewUrl]);
 
   const handleSendMessage = async () => {
     const prompt = value.trim();
@@ -66,24 +86,26 @@ function ChatInp() {
         );
       }
 
-      const payload = {
-        prompt,
-        conversationId: conversation._id,
-        agent: selectedAgents,
-      };
+      const formData = new FormData();
+      formData.append("prompt", value.trim());
+      formData.append("conversationId", conversation?._id);
+      formData.append("agent", selectedAgents);
+      if (selectedFile) {
+        formData.append("file", selectedFile);
+      }
 
       optimisticMessageId = `temp-user-${Date.now()}`;
       dispatch(
         addMessage({
           _id: optimisticMessageId,
-          conversationId: conversation._id,
+          conversationId: conversation?._id,
           role: "user",
           content: prompt,
           optimistic: true,
         }),
       );
 
-      const data = await sendMessage(payload);
+      const data = await sendMessage(formData);
       dispatch(setArtifacts(data.artifacts || []));
       const messages = await getMessages(conversation._id);
       dispatch(setMessages(messages));
@@ -101,6 +123,7 @@ function ChatInp() {
       console.error("send message error:", error.message);
     } finally {
       setIsSending(false);
+      setSelectedFile(null);
     }
   };
 
@@ -157,11 +180,10 @@ function ChatInp() {
                 onClick={() => {
                   setSelectedAgents(agent.id);
                 }}
-                className={`shrink-0 cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all ${
-                  isActive
-                    ? "bg-linear-to-r from-cyan-500 to-violet-600 text-white border-transparent shadow-[0_1px_8px_rgba(99,102,241,.35)]"
-                    : "bg-white/3 text-slate-400 border-white/6 hover:bg-white/[0.07]"
-                }`}
+                className={`shrink-0 cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all ${isActive
+                  ? "bg-linear-to-r from-cyan-500 to-violet-600 text-white border-transparent shadow-[0_1px_8px_rgba(99,102,241,.35)]"
+                  : "bg-white/3 text-slate-400 border-white/6 hover:bg-white/[0.07]"
+                  }`}
               >
                 <Icon
                   size={18}
@@ -173,6 +195,36 @@ function ChatInp() {
             );
           })}
         </div>
+
+        {selectedFile && (
+          <div className="my-3">
+            <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/4 px-3 py-4">
+              {selectedFile?.type === "application/pdf" ? (
+                <FileText size={16} className="text-purple-400" />
+              ) : (
+                selectedFile.type.startsWith("image/") && (
+                  <img
+                    src={imagePreviewUrl}
+                    alt="Selected file preview"
+                    className="text-cyan-300 h-10 w-10 rounded-xl object-cover mt-3"
+                  />
+                )
+              )}
+              <p className="text-xs text-white">{selectedFile?.name}</p>
+              <p className="text-[17px] text text-slate-400">
+                {Math.ceil(selectedFile.size)}KB
+              </p>
+            </div>
+            <button
+              type="button"
+              aria-label="Remove selected file"
+              className="ml-2 flex h-8 w-8 items-center justify-center"
+              onClick={() => setSelectedFile(null)}
+            >
+              <X className="text-slate-400 hover:text-white" />
+            </button>
+          </div>
+        )}
 
         {/* textarea */}
         <textarea
@@ -192,7 +244,26 @@ function ChatInp() {
         />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <button className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/5 border border-transparent hover:border-white/6 transition-all duration-150 bg-transparent cursor-pointer">
+            <input
+              type="file"
+              accept=".pdf,image/*"
+              hidden
+              ref={fileRef}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setSelectedFile(file);
+                }
+                e.target.value = "";
+              }}
+            />
+
+            <button
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/5 border border-transparent hover:border-white/6 transition-all duration-150 bg-transparent cursor-pointer"
+              onClick={() => {
+                fileRef.current.click();
+              }}
+            >
               <Paperclip />
             </button>
             <button className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/5 border border-transparent hover:border-white/6 transition-all duration-150 bg-transparent cursor-pointer">

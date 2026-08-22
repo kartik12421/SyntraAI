@@ -1,12 +1,11 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { getModel } from "../config/llm.model.js";
 import fs from "fs";
-import { burnCredits } from "../utils/burnCredits.js";
 
 export const imgAnalyzer = async (state) => {
   try {
-    const llm = await getModel("imtext.file.pathgAnalyzer");
-    const imgBuffer = await fs.readFile(text.file.path);
+    const llm = await getModel("imgAnalyzer");
+    const imgBuffer = await fs.promises.readFile(state.file.path);
     const base64Img = imgBuffer.toString("base64");
 
     const messages = [
@@ -41,17 +40,19 @@ Rules:
     ];
 
     const res = await llm.invoke(messages);
-    await burnCredits(state.userId, "imageGen");
     return {
       ...state,
       aiResponse: res.content,
     };
   } catch (error) {
+    console.error("imgAnalyzer error:", error.message);
     return {
       ...state,
       aiResponse: "Failed to analyze file 😓",
     };
   } finally {
-    fs.unlink(state.file.path);
+    if (state.file?.path) {
+      fs.promises.unlink(state.file.path).catch(() => {});
+    }
   }
 };
