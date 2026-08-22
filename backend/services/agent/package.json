@@ -23,6 +23,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.8.0",
+    "multer": "^2.2.0",
     "pdfkit": "^0.19.1",
     "pptxgenjs": "^4.0.1"
   }

@@ -6,6 +6,7 @@ import { burnCredits } from "../utils/burnCredits.js";
 export const agent = async (req, res) => {
   try {
     const { prompt, conversationId, agent: selectedAgent } = req.body;
+    const file = req.file;
 
     if (!conversationId) {
       return res.status(400).json({ message: "conversation id missing" });
@@ -25,10 +26,15 @@ export const agent = async (req, res) => {
       prompt: prompt.trim(),
       conversationId,
       agent: selectedAgent,
+      file
     });
 
     const userId = req.headers["x-user-id"];
-    await burnCredits(userId, result.agent || selectedAgent, req.headers.cookie);
+    await burnCredits(
+      userId,
+      result.agent || selectedAgent,
+      req.headers.cookie,
+    );
 
     await addMessages(conversationId, "user", prompt.trim());
 
