@@ -9,6 +9,7 @@ import {
   Plus,
   PlusIcon,
   User,
+  X,
 } from "lucide-react";
 import getConversation from "../../features/getConversation.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +21,7 @@ import {
 import { createConversation } from "../../features/createConversation.js";
 import logOut from "../../features/logOut.js";
 import { clearUserData } from "../redux/userSlice.js";
+import { setSidebarOpen } from "../redux/uiSlice.js";
 import Payment from "./Payment.jsx";
 
 function Sidebar() {
@@ -32,6 +34,7 @@ function Sidebar() {
   const { conversations, selectedConversation } = useSelector(
     (state) => state.conversation,
   );
+  const { sidebarOpen } = useSelector((state) => state.ui);
 
   useEffect(() => {
     const getConvo = async () => {
@@ -71,6 +74,7 @@ function Sidebar() {
   const handleSelectConversation = (conversation) => {
     dispatch(setSelectConversations(conversation));
     setIsActive(conversation._id);
+    dispatch(setSidebarOpen(false));
   };
 
   const handleLogout = async () => {
@@ -155,7 +159,18 @@ function Sidebar() {
   }
 
   return (
-    <div className="fixed lg:static inset-y-0 left-0 z-50 w-67.5 h-screen shrink-0 bg-[#0d0f14] border-r border-white/6">
+    <>
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          onClick={() => dispatch(setSidebarOpen(false))}
+        />
+      )}
+      <div
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-67.5 max-w-[85vw] h-screen shrink-0 bg-[#0d0f14] border-r border-white/6 transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
+      >
       <div className="flex flex-col h-full">
         {/* top portion of Sidebar */}
         <div className="flex items-center gap-2.5 px-4 py-4 border-b border-white/6">
@@ -175,9 +190,18 @@ function Sidebar() {
             className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer"
             onClick={() => {
               dispatch(setSelectConversations(null));
+              dispatch(setSidebarOpen(false));
             }}
           >
             <PenBoxIcon size={17} />
+          </button>
+          <button
+            type="button"
+            aria-label="Close menu"
+            className="flex lg:hidden items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer"
+            onClick={() => dispatch(setSidebarOpen(false))}
+          >
+            <X size={18} />
           </button>
         </div>
 
@@ -187,6 +211,7 @@ function Sidebar() {
             className="w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-linear-to-br from-cyan-400 to-violet-600 rounded-xl py-2.5 border-none cursor-pointer hover:opacity-90 transition-opacity duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => {
               dispatch(setSelectConversations(null));
+              dispatch(setSidebarOpen(false));
             }}
             disabled={!userData}
           >
@@ -290,7 +315,8 @@ function Sidebar() {
           setShowPayment(false);
         }}
       />
-    </div>
+      </div>
+    </>
   );
 }
 

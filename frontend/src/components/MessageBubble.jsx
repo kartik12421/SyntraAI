@@ -27,7 +27,7 @@ function MessageBubble({ role, content, images }) {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`w-fit max-w-[92vw] md:max-w-[72%] px-4 rounded-2xl wrap-break-word overflow-hidden leading-relaxed ${
+        className={`w-fit max-w-[88%] md:max-w-[72%] px-3.5 sm:px-4 rounded-2xl wrap-break-word overflow-hidden leading-relaxed ${
           isUser
             ? "bg-linear-to-br from-indigo-500 to-violet-700 text-white rounded-tr-sm"
             : "text-slate-200 rounded-tl-sm"
@@ -213,7 +213,7 @@ function MessageBubble({ role, content, images }) {
                 <img
                   src={src}
                   alt={alt}
-                  className="rounded-lg my-4 max-w-full border border-white/10 h-98 w-98"
+                  className="rounded-lg my-4 max-w-full h-auto max-h-98 w-auto border border-white/10"
                 />
               ),
 

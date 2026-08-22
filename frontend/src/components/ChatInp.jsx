@@ -169,7 +169,7 @@ function ChatInp() {
     <div className="w-full overflow-hidden px-3 md:px-5 py-4 border-t border-white/6 bg-[#0d0f14]">
       <div className="flex flex-col gap-2 bg-white/3 border border-white/7 rounded-2xl px-4 pt-3.5 pb-3">
         {/* agents mapping */}
-        <div className="flex w-[80%] gap-2 pr-2 flex-wrap">
+        <div className="flex w-full gap-2 flex-wrap">
           {agents.map((agent) => {
             const isActive = selectedAgents === agent.id;
             const Icon = agent.icon;
@@ -180,10 +180,11 @@ function ChatInp() {
                 onClick={() => {
                   setSelectedAgents(agent.id);
                 }}
-                className={`shrink-0 cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all ${isActive
-                  ? "bg-linear-to-r from-cyan-500 to-violet-600 text-white border-transparent shadow-[0_1px_8px_rgba(99,102,241,.35)]"
-                  : "bg-white/3 text-slate-400 border-white/6 hover:bg-white/[0.07]"
-                  }`}
+                className={`shrink-0 cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all ${
+                  isActive
+                    ? "bg-linear-to-r from-cyan-500 to-violet-600 text-white border-transparent shadow-[0_1px_8px_rgba(99,102,241,.35)]"
+                    : "bg-white/3 text-slate-400 border-white/6 hover:bg-white/[0.07]"
+                }`}
               >
                 <Icon
                   size={18}
@@ -198,31 +199,35 @@ function ChatInp() {
 
         {selectedFile && (
           <div className="my-3">
-            <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/4 px-3 py-4">
+            <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/4 px-3 py-3 max-w-full">
               {selectedFile?.type === "application/pdf" ? (
-                <FileText size={16} className="text-purple-400" />
+                <FileText size={16} className="text-purple-400 shrink-0" />
               ) : (
                 selectedFile.type.startsWith("image/") && (
                   <img
                     src={imagePreviewUrl}
                     alt="Selected file preview"
-                    className="text-cyan-300 h-10 w-10 rounded-xl object-cover mt-3"
+                    className="text-cyan-300 h-10 w-10 rounded-xl object-cover shrink-0"
                   />
                 )
               )}
-              <p className="text-xs text-white">{selectedFile?.name}</p>
-              <p className="text-[17px] text text-slate-400">
-                {Math.ceil(selectedFile.size)}KB
-              </p>
+              <div className="min-w-0">
+                <p className="text-xs text-white truncate">
+                  {selectedFile?.name}
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  {Math.ceil(selectedFile.size / 1024)}KB
+                </p>
+              </div>
+              <button
+                type="button"
+                aria-label="Remove selected file"
+                className="ml-2 flex h-8 w-8 items-center justify-center"
+                onClick={() => setSelectedFile(null)}
+              >
+                <X className="text-slate-400 hover:text-white" />
+              </button>
             </div>
-            <button
-              type="button"
-              aria-label="Remove selected file"
-              className="ml-2 flex h-8 w-8 items-center justify-center"
-              onClick={() => setSelectedFile(null)}
-            >
-              <X className="text-slate-400 hover:text-white" />
-            </button>
           </div>
         )}
 
