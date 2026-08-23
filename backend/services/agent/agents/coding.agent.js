@@ -64,7 +64,7 @@ ${state.prompt}
     if (intent == "CODE_GENERATION") {
       prompt = `
 
-        You are CortexAI Coding Agent.
+        You are SyntraAI Coding Agent.
 
 Generate the requested project.
 

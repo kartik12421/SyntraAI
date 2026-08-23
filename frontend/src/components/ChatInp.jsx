@@ -26,6 +26,7 @@ import {
   addMessage,
   removeMessage,
   setArtifacts,
+  setIsGenerating,
   setMessages,
 } from "../redux/messageSlice.js";
 import { updateConversation } from "../../features/updateconversation.js";
@@ -104,6 +105,7 @@ function ChatInp() {
           optimistic: true,
         }),
       );
+      dispatch(setIsGenerating(true));
 
       const data = await sendMessage(formData);
       dispatch(setArtifacts(data.artifacts || []));
@@ -123,6 +125,7 @@ function ChatInp() {
       console.error("send message error:", error.message);
     } finally {
       setIsSending(false);
+      dispatch(setIsGenerating(false));
       setSelectedFile(null);
     }
   };

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import MessageBubble from "./MessageBubble";
+import Loader from "./Loader";
 
 function MessageList() {
   const { selectedConversation } = useSelector((state) => state.conversation);
-  const { messages } = useSelector((state) => state.message);
+  const { messages, isGenerating } = useSelector((state) => state.message);
   const showEmptyState = !selectedConversation || messages.length === 0;
   const containerRef = useRef(null);
 
@@ -17,7 +18,7 @@ function MessageList() {
       top: containerRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages, selectedConversation, showEmptyState]);
+  }, [messages, selectedConversation, showEmptyState, isGenerating]);
 
   return (
     // no messages selected screen
@@ -69,6 +70,7 @@ function MessageList() {
               </div>
             );
           })}
+          {isGenerating && <Loader />}
         </div>
       )}
     </div>
