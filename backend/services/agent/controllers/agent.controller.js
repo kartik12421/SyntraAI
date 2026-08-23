@@ -3,7 +3,7 @@ import { graph } from "../graph/graph.js";
 import { addMessages } from "../config/memory.js";
 import { burnCredits } from "../utils/burnCredits.js";
 
-export const agent = async (req, res) => {
+export const agent = async (req, res, next) => {
   try {
     const { prompt, conversationId, agent: selectedAgent } = req.body;
     const file = req.file;
@@ -54,9 +54,6 @@ export const agent = async (req, res) => {
       artifacts: result?.artifacts,
     });
   } catch (error) {
-    if (error.message === "not enough credits") {
-      return res.status(400).json({ message: error.message });
-    }
-    return res.status(500).json({ message: `agent error: ${error.message}` });
+    next(error)
   }
 };

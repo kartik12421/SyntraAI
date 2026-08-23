@@ -1,9 +1,11 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { getModel } from "../config/llm.model.js";
 import fs from "fs";
+import { checkAgentLimit } from "../config/agentLimit.js";
 
 export const imgAnalyzer = async (state) => {
   try {
+    await checkAgentLimit(state.userId, "image");
     const llm = await getModel("imgAnalyzer");
     const imgBuffer = await fs.promises.readFile(state.file.path);
     const base64Img = imgBuffer.toString("base64");
@@ -48,7 +50,7 @@ Rules:
     console.error("imgAnalyzer error:", error.message);
     return {
       ...state,
-      aiResponse: "Failed to analyze file 😓",
+      aiResponse: error?.data?.message || "Failed to analyze file 😓",
     };
   } finally {
     if (state.file?.path) {

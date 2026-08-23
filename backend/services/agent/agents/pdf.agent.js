@@ -1,3 +1,4 @@
+import { checkAgentLimit } from "../config/agentLimit.js";
 import { getModel } from "../config/llm.model.js";
 import { generatePDF } from "../utils/generatePDF.js";
 import { getFromS3 } from "../utils/getFromS3.js";
@@ -5,6 +6,7 @@ import { uploadOnS3 } from "../utils/uploadOnS3.js";
 
 export const pdfAgent = async (state) => {
   try {
+    await checkAgentLimit(state.userId, "pdf");
     const llm = await getModel("pdf");
     const prompt = `You are an expert document writer.
 
@@ -60,7 +62,7 @@ _Link expires in 24 Hours._`,
   } catch (error) {
     return {
       ...state,
-      aiResponse: "Failed to generate PDF 😓",
+      aiResponse: error?.data?.message || "Failed to generate PDF 😓",
     };
   }
 };

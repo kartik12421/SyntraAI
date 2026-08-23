@@ -1,3 +1,4 @@
+import { checkAgentLimit } from "../config/agentLimit.js";
 import { getModel } from "../config/llm.model.js";
 
 const getResponseText = (content) => {
@@ -16,7 +17,10 @@ const getResponseText = (content) => {
 const parseGeneratedFiles = (content) => {
   const text = getResponseText(content);
   const blocks = [...text.matchAll(/```([\w-]*)\s*\r?\n([\s\S]*?)(?:```|$)/g)]
-    .map((match) => ({ language: match[1].toLowerCase(), content: match[2].trim() }))
+    .map((match) => ({
+      language: match[1].toLowerCase(),
+      content: match[2].trim(),
+    }))
     .filter((block) => block.content);
 
   const fileDefinitions = [
@@ -24,13 +28,19 @@ const parseGeneratedFiles = (content) => {
     { name: "style.css", languages: ["css"] },
     { name: "script.js", languages: ["javascript", "js"] },
   ];
-  const files = fileDefinitions.map((file, index) => {
-    const block = blocks.find((item) => file.languages.includes(item.language)) || blocks[index];
-    return block ? { name: file.name, content: block.content } : null;
-  }).filter(Boolean);
+  const files = fileDefinitions
+    .map((file, index) => {
+      const block =
+        blocks.find((item) => file.languages.includes(item.language)) ||
+        blocks[index];
+      return block ? { name: file.name, content: block.content } : null;
+    })
+    .filter(Boolean);
 
   if (!files.some((file) => file.name === "index.html")) {
-    throw new Error("The code model did not return an HTML file. Please try again.");
+    throw new Error(
+      "The code model did not return an HTML file. Please try again.",
+    );
   }
 
   return { files };
@@ -38,6 +48,7 @@ const parseGeneratedFiles = (content) => {
 
 export const codingAgent = async (state) => {
   try {
+    await checkAgentLimit(state.userId, "code");
     const intentLlm = await getModel("intent");
     const llm = await getModel("code");
     const intentRes = await intentLlm.invoke(`
@@ -129,6 +140,9 @@ ${state.prompt}`;
       };
     }
   } catch (error) {
-    throw new Error(`coding agent failed: ${error.message}`);
+    return {
+      ...state,
+      aiResponse: error?.data?.message || "Coding agent failed 😓.",
+    };
   }
 };

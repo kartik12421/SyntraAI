@@ -1,7 +1,9 @@
+import { checkAgentLimit } from "../config/agentLimit.js";
 import { searchTool } from "../config/tavily.js";
 
 export const searchAgent = async (state) => {
   try {
+    await checkAgentLimit(state.userId, "search");
     const results = await searchTool.invoke({
       query: state.prompt,
       includeImages: true,
@@ -42,12 +44,12 @@ export const searchAgent = async (state) => {
       images,
     };
   } catch (error) {
-    console.error("searchAgent error:", error);
     return {
       ...state,
       searchResults: [],
       searchAnswer: null,
       images: [],
+      aiResponse: error?.data?.message || "Search agent failed 😓.",
     };
   }
 };

@@ -2,9 +2,11 @@ import { getModel } from "../config/llm.model.js";
 import axios from "axios";
 import { uploadOnS3 } from "../utils/uploadOnS3.js";
 import { getFromS3 } from "../utils/getFromS3.js";
+import { checkAgentLimit } from "../config/agentLimit.js";
 
 export const imageGenAgent = async (state) => {
   try {
+    await checkAgentLimit(state.userId, "imageGen");
     const llm = await getModel("image");
     const res = await llm.invoke(`
     You are an elite AI image prompt engineer.
@@ -61,7 +63,7 @@ ${state.prompt}
   } catch (error) {
     return {
       ...state,
-      aiResponse: "Failed to generate image 😓",
+      aiResponse: error?.data?.message || "Failed to generate image 😓.",
     };
   }
 };

@@ -4,10 +4,12 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { vectorStore } from "../config/vectorDb.js";
 import { getModel } from "../config/llm.model.js";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { checkAgentLimit } from "../config/agentLimit.js";
 
 export const pdfRag = async (state) => {
   let parser;
   try {
+    await checkAgentLimit(state.userId, "pdfRag");
     const buffer = fs.readFileSync(state.file.path);
     parser = new PDFParse({ data: buffer });
     const result = await parser.getText();
@@ -54,10 +56,15 @@ Rules:
       aiResponse: response.content,
     };
   } catch (error) {
-    console.error("pdfRag error:", error.message);
+    if (error.status == 429) {
+      return {
+        ...state,
+        aiResponse: error?.data?.message,
+      };
+    }
     return {
       ...state,
-      aiResponse: "Failed to analyze PDF 😓",
+      aiResponse: error?.data?.message || "Failed to analyze PDF 😓",
     };
   } finally {
     await parser?.destroy();

@@ -5,9 +5,11 @@ import {
 } from "@langchain/core/messages";
 import { getModel } from "../config/llm.model.js";
 import { getMemory } from "../config/memory.js";
+import { checkAgentLimit } from "../config/agentLimit.js";
 
 export const chatAgent = async (state) => {
   try {
+    await checkAgentLimit(state.userId, "chat");
     const llm = await getModel("chat");
 
     const history = await getMemory(state.conversationId);
@@ -85,8 +87,9 @@ Formatting:
       aiResponse: response.content,
     };
   } catch (error) {
-    // This function is a LangGraph node, not an Express handler, so it does
-    // not receive `res`. Propagate the failure to the controller instead.
-    throw new Error(`chat agent failed: ${error.message}`);
+    return {
+      ...state,
+      aiResponse: error?.data?.message || "Chat agent failed 😓.",
+    };
   }
 };
