@@ -43,31 +43,41 @@ function Home({ onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen min-w-0 bg-[#0d0f14] text-white overflow-hidden">
-      {userData ? (
-        <div className="flex h-screen w-full">
-          <Sidebar />
-          <ChatArea />
-          <Artifact />
-        </div>
-      ) : (
-        <div className="min-h-screen flex items-center justify-center px-4">
-          <div className="w-full max-w-85 bg-[#13151c] border border-white/8 rounded-2xl p-7 flex flex-col gap-5">
-            <div className="flex flex-col gap-1">
-              <h2 className="text-[17px] font-semibold text-slate-100 tracking-tight">
-                Welcome in SyntraAI
-              </h2>
-              <p className="text-[15px] text-slate-500">
-                Login or Signin to enjoy services.
+    <div className="relative min-h-screen min-w-0 bg-[#0d0f14] text-white overflow-hidden">
+      <div
+        className={`flex h-screen w-full ${
+          userData ? "" : "pointer-events-none select-none"
+        }`}
+        aria-hidden={!userData}
+      >
+        <Sidebar />
+        <ChatArea />
+        <Artifact />
+      </div>
+
+      {!userData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-[#0d0f14]/60 backdrop-blur-lg">
+          <div className="w-full max-w-90 bg-white/4 backdrop-blur-2xl border border-white/10 rounded-3xl p-9 flex flex-col items-center gap-7 shadow-2xl shadow-black/50">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-white via-indigo-200 to-violet-300 bg-clip-text text-transparent">
+                Welcome to SyntraAI
+              </h1>
+              <p className="text-[15px] text-slate-400">
+                Sign in to unlock your AI workspace.
               </p>
             </div>
+
             <button
               type="button"
-              className="w-full flex items-center justify-center gap-3 py-2.75 rounded-xl text-sm font-medium text-white bg-linear-to-br from-indigo-500 to-violet-700 hover:from-indigo-400 hover:to-violet-600 active:from-indigo-600 active:to-violet-800 border border-indigo-500/30 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-all duration-150 cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-sm font-medium text-white bg-linear-to-br from-indigo-500 to-violet-700 hover:from-indigo-400 hover:to-violet-600 active:from-indigo-600 active:to-violet-800 border border-indigo-500/30 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               onClick={googleLogin}
             >
-              <FcGoogle size={15} /> Continue with Google
+              <FcGoogle size={17} /> Continue with Google
             </button>
+
+            <p className="text-xs text-slate-600">
+              Secured sign-in &middot; No account needed
+            </p>
           </div>
         </div>
       )}
