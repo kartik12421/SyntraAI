@@ -7,6 +7,7 @@ import {
   Image,
   MessageCircleIcon,
   Mic,
+  MicOff,
   Paperclip,
   Presentation,
   Send,
@@ -41,7 +42,9 @@ function ChatInp() {
   const [selectedAgents, setSelectedAgents] = useState("auto");
   const [isSending, setIsSending] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isListening, setIsListening] = useState(false);
   const fileRef = useRef(null);
+  const recognitionRef = useRef(null);
   const imagePreviewUrl = useMemo(() => {
     if (!selectedFile?.type.startsWith("image/")) {
       return null;
@@ -57,6 +60,49 @@ function ChatInp() {
       }
     };
   }, [imagePreviewUrl]);
+
+  const toggleListening = () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      console.warn("Speech recognition not supported in this browser.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setValue((prev) => `${prev.trim() ? prev.trim() + " " : ""}${transcript}`);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event) => {
+      if (event.error === "not-allowed") {
+        console.warn("Microphone permission denied.");
+      }
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsListening(true);
+  };
 
   const handleSendMessage = async () => {
     const prompt = value.trim();
@@ -274,8 +320,16 @@ function ChatInp() {
             >
               <Paperclip />
             </button>
-            <button className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/5 border border-transparent hover:border-white/6 transition-all duration-150 bg-transparent cursor-pointer">
-              <Mic />
+            <button
+              onClick={toggleListening}
+              aria-label={isListening ? "Stop listening" : "Start listening"}
+              className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-150 bg-transparent cursor-pointer ${
+                isListening
+                  ? "text-red-400 hover:text-red-300 hover:bg-white/5 border-red-400/40 hover:border-red-400/60"
+                  : "text-slate-600 hover:text-slate-400 hover:bg-white/5 border-transparent hover:border-white/6"
+              }`}
+            >
+              {isListening ? <MicOff /> : <Mic />}
             </button>
           </div>
           <button
