@@ -25,7 +25,7 @@ app.use((err, req, res, next) => {
     return res.status(err.status).json(err.data);
   }
 
-  return res.status(500).json({ message: `agent error: ${error}` });
+  return res.status(500).json({ message: `agent error: ${err.message}` });
 });
 
 app.listen(port, () => {
