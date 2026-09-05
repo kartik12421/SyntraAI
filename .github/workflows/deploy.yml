@@ -152,6 +152,9 @@ jobs:
       - name: build frontend
         run: |
           cd frontend
+          echo "VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}" > .env.production
+          echo "VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}" >> .env.production
+          echo "VITE_RAZORPAY_API_KEY=${{ secrets.VITE_RAZORPAY_API_KEY }}" >> .env.production
           npm ci
           npm run build
 
