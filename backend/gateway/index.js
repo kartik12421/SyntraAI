@@ -14,7 +14,7 @@ const port = process.env.PORT;
 const app = express();
 
 //middlewares
-app.use(morgan("dev"))
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(
   cors({
@@ -29,11 +29,15 @@ app.use("/api/auth", proxy(process.env.AUTH_SERVICE));
 app.use("/api/chat", protectRoute, proxyWithHeader(process.env.CHAT_SERVICE));
 app.use("/api/me", protectRoute, getCurrentUser);
 app.use("/api/agent", protectRoute, proxyWithHeader(process.env.AGENT_SERVICE));
-app.use("/api/payment", protectRoute, proxyWithHeader(process.env.PAYMENT_SERVICE));
+app.use(
+  "/api/payment",
+  protectRoute,
+  proxyWithHeader(process.env.PAYMENT_SERVICE),
+);
 
 //routes
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "welcome to gateway" });
+  res.status(200).json({ message: "welcome to gateway v2" });
 });
 app.listen(port, () => {
   console.log(`gateway started at ${port}`);
