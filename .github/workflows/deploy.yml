@@ -44,7 +44,10 @@ jobs:
           $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/gateway:latest
 
       - name: build auth
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > backend/services/auth/securityKey.json
           docker build \
           -f backend/services/auth/Dockerfile \
           -t auth backend
