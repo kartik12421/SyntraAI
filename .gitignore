@@ -1,2 +1,24 @@
 **/.env
 **/.env.*
+**/node_modules/
+
+# Secrets and credentials
+**/securityKey.json
+**/service-account*.json
+**/*credentials*.json
+**/*secret*.json
+**/*secrets*.json
+**/*token*.json
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx
+**/*.crt
+**/*.cer
+
+# Local Docker configuration and secrets
+**/docker-compose.override.yml
+**/docker-compose.local.yml
+**/docker-compose.*.local.yml
+**/docker-secrets/
+**/.docker-secrets/
