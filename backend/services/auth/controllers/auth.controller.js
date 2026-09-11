@@ -88,8 +88,9 @@ export const updateUserPayment = async (req, res) => {
       return res.status(404).json({ message: "user not found" });
     }
     user.plan = plan;
-    user.credits += credits;
-    user.totalCredits += credits;
+    const creditAmount = Number(credits) || 0;
+    user.credits += creditAmount;
+    user.totalCredits += creditAmount;
     user.planExpiredAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await user.save();
 

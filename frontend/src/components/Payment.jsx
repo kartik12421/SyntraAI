@@ -1,12 +1,15 @@
 import React from "react";
 import { AnimatePresence, color, motion } from "motion/react";
 import { CrownIcon, Currency, Key, X } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createPayment } from "../../features/createPayment.js";
 import { verifyPayment } from "../../features/verifyPayment.js";
+import { getCurrentUser } from "../../features/getCurrentUser.js";
+import { setUserData } from "../redux/userSlice.js";
 
 function Payment({ open, onClose }) {
   const { userData } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   const handleLevelUp = async (plan) => {
     try {
@@ -20,7 +23,9 @@ function Payment({ open, onClose }) {
         order_id: data?.order.id,
         handler: async (res) => {
           try {
-            const data = verifyPayment(res);
+            await verifyPayment(res);
+            const currentUser = await getCurrentUser();
+            dispatch(setUserData(currentUser));
           } catch (err) {
             console.log("Payment verification failed:", err);
           }

@@ -23,7 +23,7 @@ const paymentSchema = new mongoose.Schema(
       default: "INR",
     },
     credits: {
-      type: String,
+      type: Number,
     },
     plan: {
       type: String,

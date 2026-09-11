@@ -60,11 +60,15 @@ export const verifyPayment = async (req, res) => {
     payment.paymentId = razorpay_payment_id;
     await payment.save();
 
-    await axios.post(`${process.env.AUTH_SERVICE}/update-plan`, {
-      userId: payment?.userId,
-      plan: payment?.plan,
-      credits: payment?.credits,
-    });
+    await axios.post(
+      `${process.env.AUTH_SERVICE}/update-plan`,
+      {
+        userId: payment?.userId,
+        plan: payment?.plan,
+        credits: payment?.credits,
+      },
+      { headers: req.headers.cookie ? { Cookie: req.headers.cookie } : {} },
+    );
 
     return res.status(200).json({ message: "Payment verified" });
   } catch (error) {
